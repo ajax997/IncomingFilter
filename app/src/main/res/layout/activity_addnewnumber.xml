@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:background="@drawable/layout_bg"
+            android:layout_height="match_parent" tools:layout_editor_absoluteY="8dp"
+            tools:layout_editor_absoluteX="8dp"
+            tools:context="com.nguyennghi.incomingfilter.AddNewNumber"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+    >
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:paddingTop="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_weight="1"
+                android:layout_height="0dp">
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+
+                    android:layout_height="wrap_content">
+                <TextView
+                        android:text="Choose Your Filter Type"
+                        android:layout_width="match_parent"
+                        style="@style/TextView"
+                        android:layout_height="wrap_content" android:id="@+id/lbType"/>
+                <Spinner
+                        android:layout_width="match_parent"
+
+                        android:layout_height="wrap_content" android:id="@+id/spinner" android:spinnerMode="dialog"/>
+            </LinearLayout>
+            <TextView
+                    android:text="Choose Provider"
+                    style="@style/TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/lbProvider"/>
+            <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/spinner2" android:spinnerMode="dialog"/>
+            <TextView
+                    android:text="Enter Number"
+                    android:layout_width="match_parent"
+                    style="@style/TextView"
+                    android:layout_height="wrap_content" android:id="@+id/lbMess"/>
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:ems="10"
+                    android:id="@+id/txtNum" android:hint="Number to block"/>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/layout_bg"
+                    android:layout_height="wrap_content">
+                <CheckBox
+                        android:text="Block Incoming Calls"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/chk_blocking_incoming_calls"
+                        android:layout_weight="1"/>
+                <CheckBox
+                        android:text="Block Incoming Messages"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/chk_blocking_incoming_mess"
+                        android:layout_weight="1"/>
+            </LinearLayout>
+            <TextView
+                    style="@style/TextView"
+                    android:text="Incoming Call Action"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/lbActions"/>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/layout_bg"
+                    android:layout_height="wrap_content">
+                <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="101dp" android:id="@+id/rb_group"
+                >
+                    <RadioButton
+                            android:text="Hang Up"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:id="@+id/radioButton4" android:layout_weight="1"/>
+                    <RadioButton
+                            android:text="Pick up"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/radioButton2"
+                            android:layout_weight="1"/>
+                    <RadioButton
+                            android:text="Silent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/radioButton"
+                            android:layout_weight="1"/>
+                    <RadioButton
+                            android:text="Vibrate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:id="@+id/radioButton3"
+                            android:layout_weight="1"/>
+                </RadioGroup>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:background="@drawable/layout_bg"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <CheckBox
+                        android:text="Phone Auto SMS"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/chkPhoneAutoSMS"
+                        android:layout_weight="1"/>
+                <CheckBox
+                        android:text="Message Auto SMS"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/chkMessAutoSMS"
+                        android:layout_weight="1"/>
+            </LinearLayout>
+            <TextView
+                    android:text="Enter Your Auto SMS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/lbM"/>
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+                    android:gravity="left|top"
+                    android:id="@+id/txtMess"
+
+                    android:hint="Write your message here!"/>
+
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:background="@drawable/layout_bg"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" android:layout_weight="0.09">
+            <Button
+                    android:text="Cancel"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content" android:id="@+id/btnCancel"/>
+            <Button
+                    android:text="Save"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/btnSave" android:layout_weight="1"/>
+        </LinearLayout>
+
+    </LinearLayout>

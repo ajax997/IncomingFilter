@@ -1,0 +1,23 @@
+<resources>
+
+    <!--<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+        <!--<item name="colorPrimary">#3F51B5</item>-->
+        <!--&lt;!&ndash; Light Indigo &ndash;&gt;-->
+        <!--<item name="colorPrimaryDark">#3949AB</item>-->
+        <!--&lt;!&ndash; Dark Indigo &ndash;&gt;-->
+        <!--<item name="colorAccent">#00B0FF</item>-->
+        <!--&lt;!&ndash; Blue &ndash;&gt;-->
+    <!--</style>-->
+    <!--&lt;!&ndash; Base application theme. &ndash;&gt;-->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+<style name="TextView">
+    <item name="android:textSize">17sp</item>
+    <item name="android:textStyle">bold</item>
+</style>
+</resources>

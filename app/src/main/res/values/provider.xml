@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="providers_array">
+        <item>Viettel</item>
+        <item>Mobifone</item>
+        <item>Vinaphone</item>
+        <item>Vietnamobile</item>
+        <item>Gmobile</item>
+    </string-array>
+</resources>
