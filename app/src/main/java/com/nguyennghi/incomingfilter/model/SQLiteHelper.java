@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class SQLiteHelper extends SQLiteOpenHelper {
 
     public static final String dbName = "incomingFilter.db";
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
     public static final String TASK_TABLE = "tasks";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_BLOCKING_BY = "blocking_by";
@@ -34,10 +34,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             COLUMN_CALL_AUTO_SMS + " EXT NOT NULL, "+
             COLUMN_MESS_AUTO_SMS + " TEXT NOT NULL, "+
             COLUMN_AUTO_TEXT_CONTENT + " TEXT NOT NULL,"+
-            COLUMN_ENABLE + "TEXT NOT NULL);"
-
+            COLUMN_ENABLE + " TEXT NOT NULL);"
             ;
-
 
 
     SQLiteHelper(Context context)

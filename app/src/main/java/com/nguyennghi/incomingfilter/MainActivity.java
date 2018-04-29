@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.nguyennghi.incomingfilter.model.TaskDatabaseAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listViewItem;
     ImageView imgNewNumber;
     ListViewAdapter adapter = null;
+    TaskDatabaseAdapter taskDatabaseAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -28,14 +30,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        taskDatabaseAdapter = new TaskDatabaseAdapter(this);
+        taskDatabaseAdapter.open();
 
         listViewItem = (ListView) findViewById(R.id.list_item);
 
-        ArrayList<FilterUnit> arrayList = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            arrayList.add(new FilterUnit("3434342", UnitType.END_NUM));
-        }
-        adapter = new ListViewAdapter(this,1, arrayList);
+        ArrayList<FilterUnit> listFilter = taskDatabaseAdapter.listUnits();
+        Toast.makeText(this, String.valueOf(listFilter.size()), Toast.LENGTH_LONG).show();
+
+        adapter = new ListViewAdapter(this,1, listFilter);
         listViewItem.setAdapter(adapter);
 
         imgNewNumber = (ImageView) findViewById(R.id.imgNewNumber);
@@ -43,13 +46,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, AddNewNumber.class);
+                intent.putExtra("NEW", "YES");
                 startActivityForResult(intent, 1);
 
             }
         });
-
-
-
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

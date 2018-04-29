@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
+import com.nguyennghi.incomingfilter.model.TaskDatabaseAdapter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,26 +24,36 @@ public class AddNewNumber extends AppCompatActivity {
     RadioGroup radioGroup;
     CheckBox phoneAutoSms, messAutoSms;
     EditText txtMess;
+    TaskDatabaseAdapter taskDatabaseAdapter;
 
+    RadioButton rb1, rb2, rb3, rb4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addnewnumber);
+        Intent intent = getIntent();
+        taskDatabaseAdapter = new TaskDatabaseAdapter(this);
+        taskDatabaseAdapter.open();
 
+        Toast.makeText(this, intent.getStringExtra("NEW"), Toast.LENGTH_LONG).show();
 
         sp_blocking_type = (Spinner) findViewById(R.id.spinner);
-        sp_provider = (Spinner)findViewById(R.id.spinner2);
-        lbMess = (TextView)findViewById(R.id.lbMess);
-        txtNum = (EditText)findViewById(R.id.txtNum);
-        btnSave = (Button)findViewById(R.id.btnSave);
-        btnCancel = (Button)findViewById(R.id.btnCancel);
-        chk_Blocking_incoming_calls = (CheckBox)findViewById(R.id.chk_blocking_incoming_calls);
-        chk_blocking_incoming_mess = (CheckBox)findViewById(R.id.chk_blocking_incoming_mess);
-        radioGroup = (RadioGroup)findViewById(R.id.rb_group);
-        phoneAutoSms = (CheckBox)findViewById(R.id.chkPhoneAutoSMS);
-        messAutoSms = (CheckBox)findViewById(R.id.chkMessAutoSMS);
-        txtMess = (EditText)findViewById(R.id.txtMess);
+        sp_provider = (Spinner) findViewById(R.id.spinner2);
+        lbMess = (TextView) findViewById(R.id.lbMess);
+        txtNum = (EditText) findViewById(R.id.txtNum);
+        btnSave = (Button) findViewById(R.id.btnSave);
+        btnCancel = (Button) findViewById(R.id.btnCancel);
+        chk_Blocking_incoming_calls = (CheckBox) findViewById(R.id.chk_blocking_incoming_calls);
+        chk_blocking_incoming_mess = (CheckBox) findViewById(R.id.chk_blocking_incoming_mess);
+        radioGroup = (RadioGroup) findViewById(R.id.rb_group);
+        phoneAutoSms = (CheckBox) findViewById(R.id.chkPhoneAutoSMS);
+        messAutoSms = (CheckBox) findViewById(R.id.chkMessAutoSMS);
+        txtMess = (EditText) findViewById(R.id.txtMess);
 
+        rb1 = (RadioButton) findViewById(R.id.rbHangUp);
+        rb2 = (RadioButton) findViewById(R.id.rbPickUp);
+        rb3 = (RadioButton) findViewById(R.id.rbSilent);
+        rb4 = (RadioButton) findViewById(R.id.rbVibrate);
 
         sp_provider.setEnabled(false);
 
@@ -54,8 +65,7 @@ public class AddNewNumber extends AppCompatActivity {
         sp_blocking_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (sp_blocking_type.getSelectedItemPosition())
-                {
+                switch (sp_blocking_type.getSelectedItemPosition()) {
                     case 0:
                         sp_provider.setEnabled(false);
                         lbMess.setText("Block Phone Number");
@@ -98,22 +108,22 @@ public class AddNewNumber extends AppCompatActivity {
             public void onClick(View view) {
 
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-                JSONObject jsonObject = new JSONObject();
+                FilterUnit filterUnit = new FilterUnit();
 
                 try {
-                    jsonObject.accumulate("blocking_by", blockingBy(sp_blocking_type.getSelectedItemPosition()).toString());
-                    jsonObject.accumulate("provider", sp_provider.getSelectedItem().toString());
-                    jsonObject.accumulate("number", txtNum.getText());
-                    jsonObject.accumulate("blocking_incoming_calls", chk_Blocking_incoming_calls.isSelected());
-                    jsonObject.accumulate("blocking_incoming_mess", chk_blocking_incoming_mess.isSelected());
-                    jsonObject.accumulate("incoming_call_action",getAction(radioGroup.getCheckedRadioButtonId()));
-                    jsonObject.accumulate("call_auto_sms",phoneAutoSms.isSelected());
-                    jsonObject.accumulate("mess_auto_sms",messAutoSms.isSelected());
-                    jsonObject.accumulate("auto_text_content", txtMess.getText().toString());
+                    filterUnit.setUnitType((blockingBy(sp_blocking_type.getSelectedItemPosition())));
+                    filterUnit.setProvider(sp_provider.getSelectedItem().toString());
+                    filterUnit.setNum(txtNum.getText().toString());
+                    filterUnit.setBlocking_incoming_calls(chk_Blocking_incoming_calls.isChecked());
+                    filterUnit.setBlocking_incoming_mess(chk_blocking_incoming_mess.isChecked());
 
-                    JsonHelper.writeJson(jsonObject, timeStamp, "//data//");
-                    JsonHelper.list();
-                } catch (JSONException e) {
+                    filterUnit.setIncoming_call_action(rb1.isChecked() ? 0 : (rb2.isChecked() ? 1 : (rb3.isChecked() ? 2 : 3)));
+                    filterUnit.setCall_auto_sms(phoneAutoSms.isChecked());
+                    filterUnit.setMess_auto_sms(messAutoSms.isChecked());
+                    filterUnit.setAuto_text_content(txtMess.getText().toString());
+                    filterUnit.setEnable(true);
+                    taskDatabaseAdapter.addNewFilter(filterUnit);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -128,7 +138,6 @@ public class AddNewNumber extends AppCompatActivity {
             public void onClick(View view) {
 
 
-
                 Intent resultIntent = new Intent();
                 setResult(Activity.RESULT_OK, resultIntent);
                 finish();
@@ -136,18 +145,18 @@ public class AddNewNumber extends AppCompatActivity {
         });
     }
 
-    private BlockingBy blockingBy(int position)
+    private UnitType blockingBy(int position)
     {
         switch (position)
         {
             case 0:
-                return BlockingBy.PHONE_NUMBER;
+                return UnitType.NUM;
             case 1:
-                return BlockingBy.PHONE_START_WITH;
+                return UnitType.START_NUM;
             case 2:
-                return BlockingBy.PHONE_END_WITH;
+                return UnitType.END_NUM;
             case 3:
-                return BlockingBy.PHONE_END_WITH;
+                return UnitType.PROVIDER;
                 default:
                     return null;
         }

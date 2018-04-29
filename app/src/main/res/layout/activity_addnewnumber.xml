@@ -92,21 +92,21 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
 
-                            android:id="@+id/radioButton4" android:layout_weight="1"/>
+                            android:id="@+id/rbHangUp" android:layout_weight="1"/>
                     <RadioButton
                             android:text="Pick up"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" android:id="@+id/radioButton2"
+                            android:layout_height="wrap_content" android:id="@+id/rbPickUp"
                             android:layout_weight="1"/>
                     <RadioButton
                             android:text="Silent"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" android:id="@+id/radioButton"
+                            android:layout_height="wrap_content" android:id="@+id/rbSilent"
                             android:layout_weight="1"/>
                     <RadioButton
                             android:text="Vibrate"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" android:id="@+id/radioButton3"
+                            android:layout_height="wrap_content" android:id="@+id/rbVibrate"
                             android:layout_weight="1"/>
                 </RadioGroup>
             </LinearLayout>

@@ -8,12 +8,13 @@ import android.util.LongSparseArray;
 import com.nguyennghi.incomingfilter.FilterUnit;
 import com.nguyennghi.incomingfilter.UnitType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by nguyennghi on 4/26/18 8:23 PM
  */
-public class TaskDatabaseAdapter {
+public class TaskDatabaseAdapter implements Serializable {
     SQLiteDatabase sqLiteDatabase;
     SQLiteHelper sqLiteHelper;
     String[] selector = {SQLiteHelper.COLUMN_ID,
@@ -27,11 +28,9 @@ public class TaskDatabaseAdapter {
             SQLiteHelper.COLUMN_MESS_AUTO_SMS,
             SQLiteHelper.COLUMN_AUTO_TEXT_CONTENT,
             SQLiteHelper.COLUMN_ENABLE
-
-
     };
 
-    TaskDatabaseAdapter(Context context)
+    public TaskDatabaseAdapter(Context context)
     {
         this.sqLiteHelper = new SQLiteHelper(context);
 
@@ -58,7 +57,7 @@ public class TaskDatabaseAdapter {
         values.put(SQLiteHelper.COLUMN_AUTO_TEXT_CONTENT, filterUnit.auto_text_content);
         values.put(SQLiteHelper.COLUMN_ENABLE, filterUnit.enable);
         sqLiteDatabase.insert(SQLiteHelper.TASK_TABLE,null, values);
-
+       String sql = values.toString();
     }
 
     public void deleteFilter(int id)
@@ -86,7 +85,8 @@ public class TaskDatabaseAdapter {
     public ArrayList<FilterUnit> listUnits()
     {
         ArrayList<FilterUnit> filterUnits = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.query(SQLiteHelper.TASK_TABLE, selector, null, null, null,null, null);
+        //Cursor cursor = sqLiteDatabase.query(SQLiteHelper.TASK_TABLE, selector, null, null, null,null, null);
+       Cursor cursor = sqLiteDatabase.rawQuery("select * from tasks", null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast())
         {
@@ -103,7 +103,7 @@ public class TaskDatabaseAdapter {
             filterUnit.setMess_auto_sms(Boolean.valueOf(cursor.getString(8)));
             filterUnit.setAuto_text_content(cursor.getString(9));
             filterUnit.setEnable(Boolean.valueOf(cursor.getString(10)));
-            
+
             filterUnits.add(filterUnit);
             cursor.moveToNext();
         }
