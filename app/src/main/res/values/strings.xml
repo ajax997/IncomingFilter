@@ -3,4 +3,10 @@
     <string name="incoming_filter">Incoming Filter</string>
     <string name="enable_all">Enable All</string>
     <string name="disable_all">Disable All</string>
+    <string name="title_activity_sms__main">SMS_Main</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

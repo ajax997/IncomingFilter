@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView imgNewNumber;
     ListViewAdapter adapter = null;
     TaskDatabaseAdapter taskDatabaseAdapter;
+    ArrayList<FilterUnit> listFilter;
+    Button btnEnableAll, btnDisableAll;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -30,15 +33,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        btnDisableAll = (Button)findViewById(R.id.btnDisableAll);
+        btnEnableAll = (Button)findViewById(R.id.btnEnableAll);
+
         taskDatabaseAdapter = new TaskDatabaseAdapter(this);
         taskDatabaseAdapter.open();
 
         listViewItem = (ListView) findViewById(R.id.list_item);
 
-        ArrayList<FilterUnit> listFilter = taskDatabaseAdapter.listUnits();
+        listFilter = taskDatabaseAdapter.listUnits();
         Toast.makeText(this, String.valueOf(listFilter.size()), Toast.LENGTH_LONG).show();
 
-        adapter = new ListViewAdapter(this,1, listFilter);
+        adapter = new ListViewAdapter(this,1, listFilter, taskDatabaseAdapter);
         listViewItem.setAdapter(adapter);
 
         imgNewNumber = (ImageView) findViewById(R.id.imgNewNumber);
@@ -49,6 +55,32 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("NEW", "YES");
                 startActivityForResult(intent, 1);
 
+            }
+        });
+
+        btnEnableAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(FilterUnit filterUnit: listFilter)
+                {
+                    filterUnit.setEnable(true);
+                    taskDatabaseAdapter.updateFilter(filterUnit);
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        btnDisableAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(FilterUnit filterUnit: listFilter)
+                {
+                    filterUnit.setEnable(false);
+                    taskDatabaseAdapter.updateFilter(filterUnit);
+                }
+
+                adapter.notifyDataSetChanged();
             }
         });
 
@@ -67,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         adapter.notifyDataSetChanged();
-      // Toast.makeText(this, "Received!", Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, JsonHelper.list(), Toast.LENGTH_LONG).show();
+        listViewItem.setAdapter(new ListViewAdapter(this,1, taskDatabaseAdapter.listUnits(), taskDatabaseAdapter));
+        adapter.notifyDataSetChanged();
     }
 }

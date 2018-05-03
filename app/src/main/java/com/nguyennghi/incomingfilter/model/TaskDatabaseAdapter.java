@@ -63,6 +63,13 @@ public class TaskDatabaseAdapter implements Serializable {
     public void deleteFilter(int id)
     {
         sqLiteDatabase.delete(SQLiteHelper.TASK_TABLE,SQLiteHelper.COLUMN_ID+" = "+ String.valueOf(id), null );
+        sqLiteDatabase.execSQL("UPDATE SQLITE_SEQUENCE SET SEQ=-1 WHERE NAME='tasks';");
+        ArrayList<FilterUnit> list = listUnitsWithoutId();
+        sqLiteDatabase.execSQL("DELETE FROM tasks");
+        for(FilterUnit filterUnit: list)
+        {
+            addNewFilter(filterUnit);
+        }
     }
 
     public void updateFilter(FilterUnit filterUnit)
@@ -78,8 +85,8 @@ public class TaskDatabaseAdapter implements Serializable {
         values.put(SQLiteHelper.COLUMN_MESS_AUTO_SMS,filterUnit.call_auto_sms);
         values.put(SQLiteHelper.COLUMN_AUTO_TEXT_CONTENT, filterUnit.auto_text_content);
         values.put(SQLiteHelper.COLUMN_ENABLE, filterUnit.enable);
-        sqLiteDatabase.update(SQLiteHelper.TASK_TABLE, values, SQLiteHelper.COLUMN_ID + "= "+ filterUnit.id,null);
 
+        sqLiteDatabase.update(SQLiteHelper.TASK_TABLE, values, SQLiteHelper.COLUMN_ID + " = "+ String.valueOf(filterUnit.id + 1),null);
     }
 
     public ArrayList<FilterUnit> listUnits()
@@ -87,6 +94,34 @@ public class TaskDatabaseAdapter implements Serializable {
         ArrayList<FilterUnit> filterUnits = new ArrayList<>();
         //Cursor cursor = sqLiteDatabase.query(SQLiteHelper.TASK_TABLE, selector, null, null, null,null, null);
        Cursor cursor = sqLiteDatabase.rawQuery("select * from tasks", null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast())
+        {
+            FilterUnit filterUnit = new FilterUnit();
+            //TODO
+            filterUnit.setId(Integer.valueOf(cursor.getString(0))-1);
+            filterUnit.setUnitType(UnitType.valueOf(cursor.getString(1)));
+            filterUnit.setProvider(cursor.getString(2));
+            filterUnit.setNum(cursor.getString(3));
+            filterUnit.setBlocking_incoming_calls(Boolean.valueOf(cursor.getString(4)));
+            filterUnit.setBlocking_incoming_mess(Boolean.valueOf(cursor.getString(5)));
+            filterUnit.setIncoming_call_action(Integer.valueOf(cursor.getString(6)));
+            filterUnit.setCall_auto_sms(Boolean.valueOf(cursor.getString(7)));
+            filterUnit.setMess_auto_sms(Boolean.valueOf(cursor.getString(8)));
+            filterUnit.setAuto_text_content(cursor.getString(9));
+            filterUnit.setEnable(Boolean.valueOf(cursor.getString(10)));
+
+            filterUnits.add(filterUnit);
+            cursor.moveToNext();
+        }
+        return filterUnits;
+    }
+
+    public ArrayList<FilterUnit> listUnitsWithoutId()
+    {
+        ArrayList<FilterUnit> filterUnits = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.query(SQLiteHelper.TASK_TABLE, selector, null, null, null,null, null);
+      //  Cursor cursor = sqLiteDatabase.rawQuery("select * from tasks", null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast())
         {

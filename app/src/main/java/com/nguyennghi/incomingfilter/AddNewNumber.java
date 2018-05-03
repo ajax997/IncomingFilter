@@ -27,6 +27,9 @@ public class AddNewNumber extends AppCompatActivity {
     TaskDatabaseAdapter taskDatabaseAdapter;
 
     RadioButton rb1, rb2, rb3, rb4;
+
+    boolean editMode = false;
+    int position = -1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +59,30 @@ public class AddNewNumber extends AppCompatActivity {
         rb4 = (RadioButton) findViewById(R.id.rbVibrate);
 
         sp_provider.setEnabled(false);
+
+        if(intent.getStringExtra("NEW").equals("NO"))
+        {
+            editMode =true;
+            position =Integer.valueOf(intent.getStringExtra("POSITION"));
+
+            FilterUnit filterUnit = taskDatabaseAdapter.listUnits().get(position);
+
+            //debug
+            Toast.makeText(this, String.valueOf(filterUnit.enable), Toast.LENGTH_SHORT).show();
+
+
+            sp_blocking_type.setSelection(blockingBy(filterUnit.unitType));
+            sp_provider.setSelection(getProvider(filterUnit.provider));
+            txtNum.setText(filterUnit.num);
+            chk_Blocking_incoming_calls.setChecked(filterUnit.blocking_incoming_calls);
+            chk_blocking_incoming_mess.setChecked(filterUnit.blocking_incoming_mess);
+            setCheck(filterUnit.incoming_call_action);
+            phoneAutoSms.setChecked(filterUnit.call_auto_sms);
+            messAutoSms.setChecked(filterUnit.mess_auto_sms);
+            txtMess.setText(filterUnit.auto_text_content);
+
+        }
+
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.planets_array, android.R.layout.simple_spinner_item);
@@ -121,8 +148,13 @@ public class AddNewNumber extends AppCompatActivity {
                     filterUnit.setCall_auto_sms(phoneAutoSms.isChecked());
                     filterUnit.setMess_auto_sms(messAutoSms.isChecked());
                     filterUnit.setAuto_text_content(txtMess.getText().toString());
-                    filterUnit.setEnable(true);
-                    taskDatabaseAdapter.addNewFilter(filterUnit);
+                    if (editMode) {
+                        filterUnit.setId(position);
+                        taskDatabaseAdapter.updateFilter(filterUnit);
+                    } else {
+                        filterUnit.setEnable(true);
+                        taskDatabaseAdapter.addNewFilter(filterUnit);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -145,6 +177,29 @@ public class AddNewNumber extends AppCompatActivity {
         });
     }
 
+    private void setCheck(int position)
+    {
+        switch (position)
+        {
+            case 1:
+                rb1.setChecked(true);
+                break;
+            case 2:
+                rb2.setChecked(true);
+                break;
+            case 3:
+                rb3.setChecked(true);
+                break;
+            case 4:
+                rb4.setChecked(true);
+                break;
+        }
+    }
+
+    private int getProvider(String provider) {
+        return provider.equals("Viettel") ? 0 : (provider.equals("Mobifone") ? 1 :
+                (provider.equals("Vinaphone") ? 2 : (provider.equals("Vietnamobile") ? 3 : 4)));
+    }
     private UnitType blockingBy(int position)
     {
         switch (position)
@@ -161,6 +216,22 @@ public class AddNewNumber extends AppCompatActivity {
                     return null;
         }
     }
+    private int blockingBy(UnitType unitType)
+    {
+       switch (unitType)
+       {
+           case NUM:
+               return 0;
+           case START_NUM:
+               return 1;
+           case END_NUM:
+               return 2;
+           case PROVIDER:
+               return 3;
+               default:return -1;
+       }
+    }
+
 
     private InComingCallActions getAction(int position)
     {
@@ -178,5 +249,4 @@ public class AddNewNumber extends AppCompatActivity {
                 return null;
         }
     }
-
 }
