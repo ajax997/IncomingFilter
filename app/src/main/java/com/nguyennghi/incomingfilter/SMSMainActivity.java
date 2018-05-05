@@ -8,7 +8,9 @@ import android.database.Cursor;
 import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +35,7 @@ public class SMSMainActivity extends AppCompatActivity {
     LoadSms loadsmsTask;
     InboxAdapter adapter, tmpadapter;;
     ListView listView;
-    FloatingActionButton fab_new;
+    FloatingActionButton fab_new, filter;
     ProgressBar loader;
     int i;
 
@@ -50,6 +52,13 @@ public class SMSMainActivity extends AppCompatActivity {
 
         listView.setEmptyView(loader);
 
+        filter  = (FloatingActionButton)findViewById(R.id.filter);
+        filter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SMSMainActivity.this, MainActivity.class));
+            }
+        });
 
         fab_new.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -59,11 +68,14 @@ public class SMSMainActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (!Telephony.Sms.getDefaultSmsPackage(getApplicationContext()).equals(getApplicationContext().getPackageName())) {
+                Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
+                        getApplicationContext().getPackageName());
+                startActivity(intent);
+            }
+        }
     }
 
 
@@ -89,13 +101,6 @@ public class SMSMainActivity extends AppCompatActivity {
         }catch(Exception e) {}
 
     }
-
-
-
-
-
-
-
 
 
     class LoadSms extends AsyncTask<String, Void, String> {

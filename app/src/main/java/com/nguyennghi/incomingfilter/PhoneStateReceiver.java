@@ -37,14 +37,9 @@ public abstract class PhoneStateReceiver extends BroadcastReceiver {
 
 
 
-
-
-
         TelephonyManager telephony = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         telephony.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
     }
-
-
 
     protected abstract void onIncomingCallStarted(String number, Date start);
     protected abstract void onOutgoingCallStarted(String number, Date start);

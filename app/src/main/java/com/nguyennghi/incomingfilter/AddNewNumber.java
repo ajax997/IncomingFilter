@@ -59,20 +59,33 @@ public class AddNewNumber extends AppCompatActivity {
         rb4 = (RadioButton) findViewById(R.id.rbVibrate);
 
         sp_provider.setEnabled(false);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
+                R.array.providers_array, android.R.layout.simple_spinner_item);
+
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        sp_provider.setAdapter(adapter2);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.planets_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        sp_blocking_type.setAdapter(adapter);
 
         if(intent.getStringExtra("NEW").equals("NO"))
         {
             editMode =true;
             position =Integer.valueOf(intent.getStringExtra("POSITION"));
-
             FilterUnit filterUnit = taskDatabaseAdapter.listUnits().get(position);
-
             //debug
             Toast.makeText(this, String.valueOf(filterUnit.enable), Toast.LENGTH_SHORT).show();
 
+            int by = blockingBy(filterUnit.unitType);
 
-            sp_blocking_type.setSelection(blockingBy(filterUnit.unitType));
-            sp_provider.setSelection(getProvider(filterUnit.provider));
+            int proviID = getProvider(filterUnit.provider);
+
+
+            sp_blocking_type.setSelection(by,true);
+            sp_provider.setSelection(proviID, true);
             txtNum.setText(filterUnit.num);
             chk_Blocking_incoming_calls.setChecked(filterUnit.blocking_incoming_calls);
             chk_blocking_incoming_mess.setChecked(filterUnit.blocking_incoming_mess);
@@ -81,14 +94,17 @@ public class AddNewNumber extends AppCompatActivity {
             messAutoSms.setChecked(filterUnit.mess_auto_sms);
             txtMess.setText(filterUnit.auto_text_content);
 
+            if(proviID == 3)
+            {
+                sp_provider.setEnabled(true);
+                txtNum.setEnabled(false);
+            }
+            else {
+                sp_provider.setEnabled(false);
+                txtNum.setEnabled(true);
+            }
         }
 
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.planets_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        sp_blocking_type.setAdapter(adapter);
         sp_blocking_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -122,12 +138,6 @@ public class AddNewNumber extends AppCompatActivity {
             }
         });
 
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
-                R.array.providers_array, android.R.layout.simple_spinner_item);
-
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        sp_provider.setAdapter(adapter2);
 
 
         btnSave.setOnClickListener(new View.OnClickListener() {
@@ -181,16 +191,16 @@ public class AddNewNumber extends AppCompatActivity {
     {
         switch (position)
         {
-            case 1:
+            case 0:
                 rb1.setChecked(true);
                 break;
-            case 2:
+            case 1:
                 rb2.setChecked(true);
                 break;
-            case 3:
+            case 2:
                 rb3.setChecked(true);
                 break;
-            case 4:
+            case 3:
                 rb4.setChecked(true);
                 break;
         }

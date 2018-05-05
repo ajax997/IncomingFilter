@@ -85,14 +85,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (!Telephony.Sms.getDefaultSmsPackage(getApplicationContext()).equals(getApplicationContext().getPackageName())) {
-                Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
-                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
-                        getApplicationContext().getPackageName());
-                startActivity(intent);
-            }
-        }
     }
 
     @Override

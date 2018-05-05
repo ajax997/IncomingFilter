@@ -150,15 +150,8 @@ public class Chat extends AppCompatActivity {
                 listView.setAdapter(adapter);
 
             }
-
-
-
-
-
         }
     }
-
-
 
 
     public void startLoadingSms()

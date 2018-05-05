@@ -2,22 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto" android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_marginTop="2dp"
-              android:layout_marginBottom="2dp"
+
+              android:layout_marginTop="7dp"
+              android:layout_marginBottom="7dp"
               android:background="@drawable/layout_bg"
               android:layout_height="wrap_content">
 
     <ImageView
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_marginLeft="7dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"
             android:paddingLeft="7dp"
             android:paddingRight="7dp"
-            app:srcCompat="@drawable/number" android:id="@+id/img_symbol"/>
+            android:id="@+id/img_symbol"/>
     <TextView
             android:text="TextView"
-            android:textSize="30sp"
+            android:textSize="25sp"
             android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/txtNumber"/>

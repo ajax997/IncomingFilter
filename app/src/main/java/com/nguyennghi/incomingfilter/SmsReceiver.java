@@ -8,16 +8,23 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 /**
  * Created by nguyennghi on 3/19/18 3:55 PM
  */
 public class SmsReceiver extends BroadcastReceiver {
+
     Context myContext;
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        Toast t = Toast.makeText(context, "Tricked", Toast.LENGTH_LONG);
+        t.show();
         this.myContext = context;
         String MSG_TYPE = intent.getAction();
         Toast.makeText(myContext, MSG_TYPE,Toast.LENGTH_SHORT).show();
@@ -33,28 +40,50 @@ public class SmsReceiver extends BroadcastReceiver {
                 smsMessage[n] = SmsMessage.createFromPdu((byte[]) messages[n]);
             }
 
-            // show first message
             Toast toast2 = Toast.makeText(context, "BLOCKED Received SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
             toast2.show();
-            abortBroadcast();
+            String mess_from = smsMessage[0].getDisplayOriginatingAddress();
+            String mess_content = smsMessage[0].getMessageBody();
+
+            ArrayList<FilterUnit> filterUnits = Function.getListBlockItems(context);
+            for (FilterUnit filterUnit : filterUnits) {
+                if (filterUnit.blocking_incoming_mess)
+                    switch (filterUnit.getUnitType()) {
+                        case NUM:
+                            if (filterUnit.num.equals(mess_from))
+                             if(filterUnit.mess_auto_sms)
+                                 Function.sendSMS(mess_from, filterUnit.auto_text_content);
+                            return;
+
+                        case START_NUM:
+                            if (mess_from.startsWith(filterUnit.num))
+                                if(filterUnit.mess_auto_sms)
+                                    Function.sendSMS(mess_from, filterUnit.auto_text_content);
+                            return;
+
+                        case END_NUM:
+                            if (mess_content.endsWith(filterUnit.num))
+                                if(filterUnit.mess_auto_sms)
+                                    Function.sendSMS(mess_from, filterUnit.auto_text_content);
+                            return;
+                        case PROVIDER:
+                            if(Function.checkProvider(mess_content, filterUnit.provider))
+                                if(filterUnit.mess_auto_sms)
+                                    Function.sendSMS(mess_from, filterUnit.auto_text_content);
+                            return;
+
+                    }
+            }
+
+            Function.writeSMSBack(myContext,mess_from,mess_content,"inbox");
+            Function.showNotification(context, mess_from, mess_content);
+
             for (int i = 0; i < 8; i++) {
                 System.out.println("Blocking SMS **********************");
             }
-
         }
     }
 
 
-    public void writeSMSBack()
-    {
-         final String SENT_SMS_CONTENT_PROVIDER_URI_OLDER_API_19 = "content://sms/sent";
 
-        ContentValues values = new ContentValues();
-        values.put("address", "0989887877");
-        values.put("body", "Hello!");
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-            myContext.getContentResolver().insert(Telephony.Sms.Sent.CONTENT_URI, values);
-        else myContext.getContentResolver().insert(Uri.parse(SENT_SMS_CONTENT_PROVIDER_URI_OLDER_API_19), values);
-    }
 }

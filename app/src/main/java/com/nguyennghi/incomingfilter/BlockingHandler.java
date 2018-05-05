@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.android.internal.telephony.ITelephony;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -21,23 +22,11 @@ public class BlockingHandler extends PhoneStateReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (intent.getAction().equals("android.intent.action.PHONE_STATE")) {
-
-            final String numberCall = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-            if (numberCall != null) {
-                Log.e("Number", numberCall);
-
-                Toast.makeText(context, "Match - PHONE CALL", Toast.LENGTH_LONG).show();
-
-                disconnectPhoneITelephony(context);
-            }
-        }
     }
 
-
-    // Keep this method as it is
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void disconnectPhoneITelephony(Context context) {
+   private int savedState;
+    private void disconnectPhoneITelephony(Context context, Action action) {
         ITelephony telephonyService;
         TelephonyManager telephony = (TelephonyManager)
                 context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -47,47 +36,77 @@ public class BlockingHandler extends PhoneStateReceiver {
             Method m = c.getDeclaredMethod("getITelephony");
             m.setAccessible(true);
             telephonyService = (ITelephony) m.invoke(telephony);
-
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.send(context, "098867677", "I love you!");
             new Thread(new Runnable() {
-
                 @Override
                 public void run() {
-
                     try {
 
                         Runtime.getRuntime().exec( "input keyevent " + KeyEvent.KEYCODE_HEADSETHOOK );
                     }
                     catch (Throwable t) {
-
                         // do something proper here.
                     }
                 }
             }).start();
-            telephonyService.endCall();
+
             final AudioManager mode = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-//            switch( mode.getRingerMode() ){
-//                case AudioManager.RINGER_MODE_NORMAL:
-//                    break;
-//                case AudioManager.RINGER_MODE_SILENT:
-//                    break;
-//                case AudioManager.RINGER_MODE_VIBRATE:
-//                    break;
-//            }
 
-            mode.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-
-       //     mode.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            switch (action)
+            {
+                case HANGUP:
+                    telephonyService.endCall();
+                    break;
+                case PICKUP:
+                    telephonyService.answerRingingCall();
+                    break;
+                case SILENT:
+                    savedState = mode.getRingerMode();
+                    mode.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                    break;
+                case VIBRATE:
+                    savedState = mode.getRingerMode();
+                    mode.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                    break;
+            }
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
     }
+
+
     @Override
     protected void onIncomingCallStarted(String number, Date start) {
+        final String numberCall = number;
+        if (numberCall != null) {
+            Toast.makeText(savedContext, "Match - PHONE CALL", Toast.LENGTH_LONG).show();
+            ArrayList<FilterUnit> filterUnits = Function.getListBlockItems(savedContext);
+            for (FilterUnit filterUnit : filterUnits) {
+                if (filterUnit.blocking_incoming_calls)
+                    switch (filterUnit.getUnitType()) {
+                        case NUM:
+                            if (filterUnit.num.equals(numberCall))
+                                disconnectPhoneITelephony(savedContext, Function.coverAction(filterUnit.incoming_call_action));
+                            break;
 
+                        case START_NUM:
+                            if (numberCall.startsWith(filterUnit.num))
+                                disconnectPhoneITelephony(savedContext, Function.coverAction(filterUnit.incoming_call_action));
+                            break;
+
+                        case END_NUM:
+                            if (numberCall.endsWith(filterUnit.num))
+                                disconnectPhoneITelephony(savedContext, Function.coverAction(filterUnit.incoming_call_action));
+                            break;
+                        case PROVIDER:
+                            Function.checkProvider(numberCall, filterUnit.provider);
+                            disconnectPhoneITelephony(savedContext, Function.coverAction(filterUnit.incoming_call_action));
+                            break;
+
+                    }
+            }
+        }
     }
 
     @Override
@@ -102,7 +121,8 @@ public class BlockingHandler extends PhoneStateReceiver {
 
     @Override
     protected void onOutgoingCallEnded(String number, Date start, Date end) {
-
+        final AudioManager mode = (AudioManager) savedContext.getSystemService(Context.AUDIO_SERVICE);
+        mode.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
     }
 
     @Override

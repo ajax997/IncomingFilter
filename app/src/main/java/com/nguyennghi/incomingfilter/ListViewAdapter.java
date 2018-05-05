@@ -40,6 +40,7 @@ public class ListViewAdapter extends ArrayAdapter<FilterUnit>  {
             holder.aSwitch = (Switch) convertView.findViewById(R.id.S_enable);
             holder.edit = (ImageView) convertView.findViewById(R.id.btn_edit);
             holder.delete = (ImageView) convertView.findViewById(R.id.btn_del);
+            holder.img_symbol = (ImageView) convertView.findViewById(R.id.img_symbol);
 
             convertView.setTag(holder);
         } else {
@@ -48,10 +49,30 @@ public class ListViewAdapter extends ArrayAdapter<FilterUnit>  {
         //TODO
 
         final FilterUnit filterUnit;
-            filterUnit = listItem.get(position);
+        filterUnit = listItem.get(position);
 
 
-        holder.num.setText(filterUnit.num);
+
+        switch (filterUnit.getUnitType())
+        {
+            case NUM:
+                holder.num.setText(filterUnit.num);
+                holder.img_symbol.setBackgroundResource(R.drawable.ic_num);
+                break;
+            case PROVIDER:
+                holder.num.setText(filterUnit.provider);
+                holder.img_symbol.setBackgroundResource(R.drawable.ic_provider);
+                break;
+            case END_NUM:
+                holder.num.setText("E-with: "+ filterUnit.num);
+                holder.img_symbol.setBackgroundResource(R.drawable.ic_end);
+                break;
+            case START_NUM:
+                holder.num.setText("S-with: "+ filterUnit.num);
+                holder.img_symbol.setBackgroundResource(R.drawable.ic_start);
+                break;
+        }
+
         holder.aSwitch.setChecked(filterUnit.enable);
 
 
@@ -62,7 +83,7 @@ public class ListViewAdapter extends ArrayAdapter<FilterUnit>  {
                 Toast.makeText(context, "Edit", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(context, AddNewNumber.class);
                 intent.putExtra("NEW", "NO");
-                intent.putExtra("POSITION",String.valueOf(position));
+                intent.putExtra("POSITION", String.valueOf(position));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
@@ -72,7 +93,7 @@ public class ListViewAdapter extends ArrayAdapter<FilterUnit>  {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "Delete", Toast.LENGTH_LONG).show();
-                taskDatabaseAdapter.deleteFilter(filterUnit.id+1);
+                taskDatabaseAdapter.deleteFilter(filterUnit.id + 1);
                 listItem.remove(position);
                 notifyDataSetChanged();
             }
@@ -94,6 +115,7 @@ public class ListViewAdapter extends ArrayAdapter<FilterUnit>  {
         public TextView num;
         public ImageView edit, delete;
         public Switch aSwitch;
+        public ImageView img_symbol;
     }
 
 }

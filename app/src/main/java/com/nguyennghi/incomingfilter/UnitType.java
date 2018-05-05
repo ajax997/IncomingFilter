@@ -8,6 +8,6 @@ public enum UnitType {
     TEXT,
     PROVIDER,
     START_NUM,
-    END_NUM,
-
+    END_NUM
 }
+

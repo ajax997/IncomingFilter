@@ -103,13 +103,13 @@ public class TaskDatabaseAdapter implements Serializable {
             filterUnit.setUnitType(UnitType.valueOf(cursor.getString(1)));
             filterUnit.setProvider(cursor.getString(2));
             filterUnit.setNum(cursor.getString(3));
-            filterUnit.setBlocking_incoming_calls(Boolean.valueOf(cursor.getString(4)));
-            filterUnit.setBlocking_incoming_mess(Boolean.valueOf(cursor.getString(5)));
+            filterUnit.setBlocking_incoming_calls((cursor.getString(4)).equals("1"));
+            filterUnit.setBlocking_incoming_mess((cursor.getString(5)).equals("1"));
             filterUnit.setIncoming_call_action(Integer.valueOf(cursor.getString(6)));
-            filterUnit.setCall_auto_sms(Boolean.valueOf(cursor.getString(7)));
-            filterUnit.setMess_auto_sms(Boolean.valueOf(cursor.getString(8)));
+            filterUnit.setCall_auto_sms((cursor.getString(7)).equals("1"));
+            filterUnit.setMess_auto_sms((cursor.getString(8)).equals("1"));
             filterUnit.setAuto_text_content(cursor.getString(9));
-            filterUnit.setEnable(Boolean.valueOf(cursor.getString(10)));
+            filterUnit.setEnable((cursor.getString(10)).equals("1"));
 
             filterUnits.add(filterUnit);
             cursor.moveToNext();
@@ -131,13 +131,13 @@ public class TaskDatabaseAdapter implements Serializable {
             filterUnit.setUnitType(UnitType.valueOf(cursor.getString(1)));
             filterUnit.setProvider(cursor.getString(2));
             filterUnit.setNum(cursor.getString(3));
-            filterUnit.setBlocking_incoming_calls(Boolean.valueOf(cursor.getString(4)));
-            filterUnit.setBlocking_incoming_mess(Boolean.valueOf(cursor.getString(5)));
+            filterUnit.setBlocking_incoming_calls(!(cursor.getString(4)).equals("0"));
+            filterUnit.setBlocking_incoming_mess(!(cursor.getString(5)).equals("0"));
             filterUnit.setIncoming_call_action(Integer.valueOf(cursor.getString(6)));
-            filterUnit.setCall_auto_sms(Boolean.valueOf(cursor.getString(7)));
-            filterUnit.setMess_auto_sms(Boolean.valueOf(cursor.getString(8)));
+            filterUnit.setCall_auto_sms((cursor.getString(7)).equals("1"));
+            filterUnit.setMess_auto_sms((cursor.getString(8)).equals("1"));
             filterUnit.setAuto_text_content(cursor.getString(9));
-            filterUnit.setEnable(Boolean.valueOf(cursor.getString(10)));
+            filterUnit.setEnable((cursor.getString(10)).equals("1"));
 
             filterUnits.add(filterUnit);
             cursor.moveToNext();

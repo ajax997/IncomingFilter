@@ -1,13 +1,22 @@
 package com.nguyennghi.incomingfilter;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.provider.Telephony;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.NotificationCompat;
 import android.telephony.SmsManager;
+import com.nguyennghi.incomingfilter.model.TaskDatabaseAdapter;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -15,6 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Created by SHAJIB on 7/10/2017.
@@ -95,8 +106,6 @@ public class Function {
     }
 
 
-
-
     public static boolean sendSMS(String toPhoneNumber, String smsMessage) {
         try {
             SmsManager smsManager = SmsManager.getDefault();
@@ -110,6 +119,22 @@ public class Function {
     }
 
 
+    public static void showNotification(Context context, String title, String text) {
+        PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(context, SMSMainActivity.class), 0);
+        Resources r = context.getResources();
+        Notification notification = new NotificationCompat.Builder(context)
+                .setTicker(title)
+                .setSmallIcon(R.drawable.ic_mail)
+                .setContentTitle(title)
+                .setDefaults(Notification.DEFAULT_SOUND)
+                .setContentText((text))
+                .setContentIntent(pi)
+                .setAutoCancel(true)
+                .build();
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, notification);
+    }
 
 
 
@@ -152,4 +177,82 @@ public class Function {
         Object object = ois.readObject ();
         return object;
     }
+
+
+
+    public static ArrayList<FilterUnit> getListBlockItems(Context context)
+    {
+        TaskDatabaseAdapter taskDatabaseAdapter = new TaskDatabaseAdapter(context);
+        taskDatabaseAdapter.open();
+        ArrayList<FilterUnit> filterUnits = new ArrayList<>();
+        for(FilterUnit unit : taskDatabaseAdapter.listUnits())
+        {
+           // if (unit.isEnable())
+                filterUnits.add(unit);
+        }
+        return filterUnits;
+    }
+
+    public static boolean checkProvider(String number, String provider)
+    {
+        String[] viettel = {"086", "096", "097", "098", "0162", "0163", "0164", "0165", "0166", "0167", "0168", "0169"};
+        String[] mobi = {"090", "093", "0120", "0121", "0122", "0126", "0128"};
+        String[] vina = { "091", "094", "0123", "0124", "0125", "0127", "0129"};
+        String[] vnmb = { "092", "0188", "0186"};
+        String[] beeline = {"099", "0199"};
+        switch (provider)
+        {
+            case "Viettel":
+                return checkNum(number, viettel);
+
+            case "Mobifone":
+                return checkNum(number, mobi);
+
+            case "Vinaphone":
+                return checkNum(number, vina);
+
+            case "Vietnamobile":
+                return checkNum(number, vnmb);
+
+            case "Gmobile":
+                return checkNum(number, beeline);
+
+
+
+        }
+        return false;
+    }
+
+    public static boolean checkNum(String num, String[] strings)
+    {
+        for(String string:strings)
+        {
+            if(num.startsWith(string)) return true;
+        }
+        return false;
+    }
+
+
+    public static Action coverAction(int value)
+    {
+        return value == 0? Action.HANGUP:(value==1?Action.PICKUP:(value==2?Action.SILENT:Action.VIBRATE));
+    }
+
+    public static void writeSMSBack(Context myContext, String dest, String message, String folder) {
+        final String SENT_SMS_CONTENT_PROVIDER_URI_OLDER_API_19 = "content://sms/"+folder;
+
+        ContentValues values = new ContentValues();
+        values.put("address", dest);
+        values.put("body", message);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if(folder.equals("inbox"))
+                myContext.getContentResolver().insert(Telephony.Sms.Inbox.CONTENT_URI, values);
+            else
+                myContext.getContentResolver().insert(Telephony.Sms.Sent.CONTENT_URI, values);
+        }
+        else
+            myContext.getContentResolver().insert(Uri.parse(SENT_SMS_CONTENT_PROVIDER_URI_OLDER_API_19), values);
+    }
+
 }
